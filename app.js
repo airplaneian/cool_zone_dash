@@ -30,8 +30,8 @@ const DAYS = 365;
 // API Helper for real data
 async function fetchYahooData(ticker) {
     const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?range=1y&interval=1d`;
-    // We use corsproxy.io because Yahoo Finance aggressively rate-limits public proxies like allorigins
-    const proxyUrl = `https://corsproxy.io/?url=${encodeURIComponent(url)}`;
+    // We use codetabs because Yahoo Finance aggressively rate-limits allorigins, and corsproxy blocks empty referers
+    const proxyUrl = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`;
     try {
         const res = await fetch(proxyUrl);
         if (!res.ok) throw new Error(`Proxy responded with ${res.status}`);
