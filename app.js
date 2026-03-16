@@ -30,12 +30,16 @@ const DAYS = 365;
 // API Helper for real data
 async function fetchYahooData(ticker) {
     const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?range=1y&interval=1d`;
-    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+    // We use corsproxy.io because Yahoo Finance aggressively rate-limits public proxies like allorigins
+    const proxyUrl = `https://corsproxy.io/?url=${encodeURIComponent(url)}`;
     try {
         const res = await fetch(proxyUrl);
-        const json = await res.json();
-        if (!json.contents) return null;
-        const data = JSON.parse(json.contents);
+        if (!res.ok) throw new Error(`Proxy responded with ${res.status}`);
+        
+        const data = await res.json();
+        
+        if (!data || !data.chart || !data.chart.result) return null;
+        
         const result = data.chart.result[0];
         const closes = result.indicators.quote[0].close;
         const filtered = closes.filter(val => val !== null);
