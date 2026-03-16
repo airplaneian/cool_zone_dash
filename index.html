@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Systemic Risk Common Operating Picture</title>
+    <!-- Google Fonts: Inter & Merriweather -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header class="header">
+        <h1>Airplane Ian's Cool Zone<br>Situation Report</h1>
+        <div class="header-rules"></div>
+    </header>
+
+    <main class="dashboard">
+        <!-- Executive Summary / Forward -->
+        <section class="report-intro">
+            <p>This report monitors systemic risk across three tightly coupled domains: physical constraints, technology
+                market concentration, and private credit. Based on Richard Bookstaber's framework, it visualizes how
+                vulnerabilities in the physical world can rapidly propagate through interconnected financial structures.
+            </p>
+            <p>The charts below use live data to provide a real-time look at how these different areas are holding up.
+            </p>
+        </section>
+
+        <!-- Layer 1: Physical Foundation -->
+        <section class="layer">
+            <header class="layer-header">
+                <h2>Layer 1: Physical Foundation</h2>
+                <p>Tracks the real-world constraints on the economy. Energy prices serve as a proxy for the cost of
+                    physical movement, while semiconductor stocks act as a bellwether for global reliance on hardware
+                    supply chains.</p>
+            </header>
+            <div class="metrics-grid">
+                <div class="metric-card" id="metric-oil">
+                    <!-- JS will populate this with standard metric + sparkline -->
+                </div>
+                <div class="metric-card" id="metric-soxx">
+                    <!-- JS will populate this with standard metric + sparkline -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Layer 2: Tech Goliaths -->
+        <section class="layer">
+            <header class="layer-header">
+                <h2>Layer 2: Tech Goliaths</h2>
+                <p>Examines how much of the broader stock market's capital is tied up in a handful of megacap technology
+                    firms. A widening spread indicates building pressure as investments crowd into the AI infrastructure
+                    trade.</p>
+            </header>
+            <div class="metrics-grid">
+                <div class="metric-card divergence-card" id="metric-sp500-divergence">
+                    <!-- JS will populate this with divergence chart -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Layer 3: Credit Vulnerability -->
+        <section class="layer">
+            <header class="layer-header">
+                <h2>Layer 3: Credit Vulnerability</h2>
+                <p>Monitors the cost of capital versus the structural health of non-bank lenders. When treasury yields
+                    pull higher but private credit sentiment plummets, it signals that debt markets may be flashing
+                    systemic warning signs.</p>
+            </header>
+            <div class="metrics-grid">
+                <div class="metric-card" id="metric-treasury">
+                    <!-- JS will populate this with standard metric + sparkline -->
+                </div>
+                <div class="metric-card" id="metric-owl">
+                    <!-- JS will populate this with standard metric + sparkline -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

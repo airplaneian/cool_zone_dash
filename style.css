@@ -1,0 +1,306 @@
+:root {
+  --bg-color: #fafafa;
+  --card-bg: #ffffff;
+  --text-main: #111827;
+  --text-muted: #6b7280;
+  --border-color: #e5e7eb;
+  --line-color: #64748b; /* Slate blue/gray */
+  --band-color: rgba(226, 232, 240, 0.5); /* Historical normal background */
+  --alert-color: #ef4444; /* Clean red for alerts */
+  --alert-bg: #fef2f2;
+  --font-family: "Inter", sans-serif;
+  --font-serif: "Merriweather", serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  line-height: 1.5;
+  padding: 2rem;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.header {
+  margin-top: 4rem;
+  margin-bottom: 5rem;
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.header h1 {
+  font-size: 2.75rem;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+}
+
+.header-rules {
+  margin-top: 2rem;
+  height: 31px; /* 5 gaps of 6px + 6 lines of 1px = 31px total */
+  width: 100%;
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--text-main),
+    var(--text-main) 1px,
+    transparent 1px,
+    transparent 6px
+  );
+}
+
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 5rem;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.report-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.report-intro p {
+  color: var(--text-muted);
+  font-size: 1.25rem;
+  font-family: var(--font-serif);
+  line-height: 1.7;
+}
+
+
+.layer {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.layer-header h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  letter-spacing: -0.03em;
+}
+
+.layer-header p {
+  color: var(--text-muted);
+  font-size: 1.25rem;
+  font-family: var(--font-serif);
+  line-height: 1.7;
+}
+
+.metrics-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.metric-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.metric-card:hover {
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}/* Alert State for Metric Card */
+.metric-card.alert {
+  border-color: var(--alert-color);
+  box-shadow: 0 0 0 1px var(--alert-color);
+}
+
+
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.card-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.card-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--alert-color);
+  letter-spacing: 0.05em;
+  background: var(--alert-bg);
+  padding: 0.125rem 0.375rem;
+  border-radius: 4px;
+}
+
+.live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--alert-color);
+}
+
+.card-value {
+  font-size: 1.875rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.card-value.alert-text {
+  color: var(--alert-color);
+}
+
+.story-text {
+  font-size: 1.25rem;
+  color: var(--text-muted);
+  max-width: 85%;
+  font-family: var(--font-serif);
+  line-height: 1.6;
+}
+
+.story-text.alert-text {
+  color: var(--alert-color);
+  font-weight: 500;
+}
+
+/* Sparkline Container */
+.chart-container {
+  height: 80px;
+  width: 100%;
+  position: relative;
+  margin-top: 0.5rem;
+}
+
+.divergence-card .chart-container {
+  height: 180px;
+}
+
+svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.roc-container {
+  display: flex;
+  gap: 2rem;
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.roc-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.roc-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+.roc-value {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.roc-value.positive {
+  color: var(--text-main);
+}
+.roc-value.negative {
+  color: var(--text-main);
+}
+.roc-value.alert-text {
+  color: var(--alert-color);
+}
+
+.data-source {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+  opacity: 0.6;
+  margin-top: 0.5rem;
+}
+
+/* Custom SVG element styles */
+.svg-band {
+  fill: var(--band-color);
+}
+
+.svg-line {
+  fill: none;
+  stroke: var(--line-color);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.divergence-band {
+  fill: var(--alert-color);
+  opacity: 0.15;
+}
+
+.svg-line.secondary-line {
+  stroke: #94a3b8;
+  stroke-dasharray: 4;
+}
+
+/* Legend for Divergence chart */
+.legend {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  justify-content: flex-end;
+  margin-bottom: 0.5rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-weight: 500;
+}
+
+.legend-color {
+  width: 16px;
+  height: 3px;
+  border-radius: 2px;
+}
