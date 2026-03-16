@@ -30,13 +30,21 @@ const DAYS = 365;
 // API Helper for real data
 async function fetchYahooData(ticker) {
     const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?range=1y&interval=1d`;
-    // We use codetabs because Yahoo Finance aggressively rate-limits allorigins, and corsproxy blocks empty referers
-    const proxyUrl = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`;
+    // Using corsproxy.org which cleanly routes Yahoo Finance traffic without blocking Github Pages origins
+    const proxyUrl = `https://corsproxy.org/?${encodeURIComponent(url)}`;
     try {
         const res = await fetch(proxyUrl);
         if (!res.ok) throw new Error(`Proxy responded with ${res.status}`);
         
-        const data = await res.json();
+        // Parse as text first to avoid loud JSON SyntaxErrors in the console if the proxy returns a 502 HTML page
+        const text = await res.text();
+        let data;
+        try {
+            data = JSON.parse(text);
+        } catch (parseError) {
+            // Silently fail if the proxy returned an HTML error shield
+            return null;
+        }
         
         if (!data || !data.chart || !data.chart.result) return null;
         
@@ -46,7 +54,7 @@ async function fetchYahooData(ticker) {
         // Only return if we have a robust dataset
         return filtered.length > 60 ? filtered : null;
     } catch (e) {
-        console.warn("Failed to fetch live data for", ticker, e);
+        // Suppress console spam so the dashboard silently enters its background retry loop
         return null;
     }
 }
