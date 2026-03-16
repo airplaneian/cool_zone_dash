@@ -30,19 +30,21 @@ const DAYS = 365;
 // API Helper for real data
 async function fetchYahooData(ticker) {
     const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?range=1y&interval=1d`;
-    // Using corsproxy.org which cleanly routes Yahoo Finance traffic without blocking Github Pages origins
-    const proxyUrl = `https://corsproxy.org/?${encodeURIComponent(url)}`;
+    // We strictly use api.allorigins.win. Other proxies block GitHub Pages origins or redirect to spam.
+    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
     try {
         const res = await fetch(proxyUrl);
         if (!res.ok) throw new Error(`Proxy responded with ${res.status}`);
         
-        // Parse as text first to avoid loud JSON SyntaxErrors in the console if the proxy returns a 502 HTML page
-        const text = await res.text();
+        // allorigins wraps the real response inside a `.contents` string
+        const jsonWrapper = await res.json();
+        if (!jsonWrapper.contents) return null;
+        
         let data;
         try {
-            data = JSON.parse(text);
+            data = JSON.parse(jsonWrapper.contents);
         } catch (parseError) {
-            // Silently fail if the proxy returned an HTML error shield
+            // Silently fail if Yahoo Finance returned an HTML rate-limit shield instead of a JSON payload
             return null;
         }
         
