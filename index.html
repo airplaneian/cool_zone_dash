@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Systemic Risk Common Operating Picture</title>
+    <title>The Cool Zone Dashboard</title>
     <!-- Google Fonts: Inter & Merriweather -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,11 +25,14 @@
     <main class="dashboard">
         <!-- Executive Summary / Forward -->
         <section class="report-intro">
-            <p>This report monitors systemic risk across three tightly coupled domains: physical constraints, technology
-                market concentration, and private credit. Based on Richard Bookstaber's framework, it visualizes how
-                vulnerabilities in the physical world can rapidly propagate through interconnected financial structures.
+            <p>This report is my attempt at monitoring systemic risk across three (tightly coupled) domains: physical
+                constraints, tech giant market concentration, and private credit. Based on some of the signals and
+                concepts fromRichard Bookstaber's recent op-ed, my goal is to
+                visualize vulnerabilities in the physical world propagating across the broader economy through
+                interconnected financial structures.
             </p>
-            <p>The charts below use live data to provide a real-time look at how these different areas are holding up.
+            <p>The charts below use live data from Yahoo Finance to provide a real-time look at how these different
+                areas are holding up.
             </p>
         </section>
 
@@ -71,8 +74,7 @@
             <header class="layer-header">
                 <h2>Layer 3: Credit Vulnerability</h2>
                 <p>Monitors the cost of capital versus the structural health of non-bank lenders. When treasury yields
-                    pull higher but private credit sentiment plummets, it signals that debt markets may be flashing
-                    systemic warning signs.</p>
+                    pull higher but private credit sentiment plummets, it signals that debt markets may in trouble.</p>
             </header>
             <div class="metrics-grid">
                 <div class="metric-card" id="metric-treasury">
