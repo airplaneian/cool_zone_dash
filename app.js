@@ -448,3 +448,30 @@ async function initDashboard() {
 
 // Start processing on DOM load
 document.addEventListener('DOMContentLoaded', initDashboard);
+
+/**
+ * DASHBOARD VIEW TOGGLE
+ */
+
+function toggleDashboardMode() {
+    const body = document.body;
+    const btn = document.getElementById('view-toggle');
+    body.classList.toggle('dashboard-mode');
+
+    if (body.classList.contains('dashboard-mode')) {
+        btn.textContent = 'Report View';
+        localStorage.setItem('dashboardMode', 'true');
+    } else {
+        btn.textContent = 'Dashboard View';
+        localStorage.setItem('dashboardMode', 'false');
+    }
+}
+
+// Restore user preference immediately (script is at bottom of body, DOM is ready)
+(function restoreDashboardPreference() {
+    if (localStorage.getItem('dashboardMode') === 'true') {
+        document.body.classList.add('dashboard-mode');
+        const btn = document.getElementById('view-toggle');
+        if (btn) btn.textContent = 'Report View';
+    }
+})();

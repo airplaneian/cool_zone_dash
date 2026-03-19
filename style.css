@@ -304,3 +304,144 @@ svg {
   height: 3px;
   border-radius: 2px;
 }
+
+/* ─── Dashboard View Toggle Button ─── */
+
+.view-toggle {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  z-index: 100;
+  background: var(--text-main);
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1.25rem;
+  border-radius: 100px;
+  font-family: var(--font-family);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.view-toggle:hover {
+  background: #374151;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.view-toggle:active {
+  transform: translateY(0);
+}
+
+/* ─── Dashboard Mode Overrides ─── */
+
+body.dashboard-mode {
+  padding: 1rem 1.5rem;
+  overflow: hidden;
+}
+
+/* Compact header */
+body.dashboard-mode .header {
+  margin: 0 0 1rem 0;
+  max-width: 100%;
+}
+
+body.dashboard-mode .header h1 {
+  font-size: 1.125rem;
+  line-height: 1.3;
+}
+
+body.dashboard-mode .header h1 br {
+  display: none;
+}
+
+body.dashboard-mode .header-rules {
+  display: none;
+}
+
+/* Hide editorial content */
+body.dashboard-mode .report-intro {
+  display: none;
+}
+
+body.dashboard-mode .layer-header {
+  display: none;
+}
+
+/* Flatten nested structure so cards live directly in the grid */
+body.dashboard-mode .layer {
+  display: contents;
+}
+
+body.dashboard-mode .metrics-grid {
+  display: contents;
+}
+
+/* Main grid: 3 columns × 2 rows, fills viewport */
+body.dashboard-mode .dashboard {
+  max-width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: 1fr 1fr;
+  gap: 1rem;
+  height: calc(100vh - 5rem);
+}
+
+/* Explicit card placement */
+body.dashboard-mode #metric-oil            { grid-column: 1;          grid-row: 1; }
+body.dashboard-mode #metric-soxx           { grid-column: 2;          grid-row: 1; }
+body.dashboard-mode #metric-treasury       { grid-column: 3;          grid-row: 1; }
+body.dashboard-mode #metric-sp500-divergence { grid-column: 1 / span 2; grid-row: 2; }
+body.dashboard-mode #metric-owl            { grid-column: 3;          grid-row: 2; }
+
+/* Compact card styling */
+body.dashboard-mode .metric-card {
+  padding: 1rem;
+  gap: 0.5rem;
+  overflow: hidden;
+}
+
+body.dashboard-mode .card-title {
+  font-size: 0.9rem;
+}
+
+body.dashboard-mode .card-value {
+  font-size: 1.5rem;
+}
+
+body.dashboard-mode .story-text {
+  display: none;
+}
+
+body.dashboard-mode .data-source {
+  display: none;
+}
+
+body.dashboard-mode .chart-container {
+  height: auto !important;
+  flex: 1;
+  min-height: 0;
+}
+
+body.dashboard-mode .roc-container {
+  padding-top: 0.5rem;
+  gap: 1rem;
+}
+
+body.dashboard-mode .roc-label {
+  font-size: 0.65rem;
+}
+
+body.dashboard-mode .roc-value {
+  font-size: 0.85rem;
+}
+
+body.dashboard-mode .legend {
+  font-size: 0.65rem;
+  gap: 1rem;
+  margin-bottom: 0.25rem;
+}
