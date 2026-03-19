@@ -18,7 +18,7 @@ function generateData(days, startValue, volatility, trend) {
         const normalRandom = (Math.random() + Math.random() + Math.random() + Math.random() - 2) * 2;
         const dailyChange = current * (trend / 365) + current * volatility * normalRandom;
         current += dailyChange;
-        
+
         if (current < 0.1) current = 0.1;
         data.push(current);
     }
@@ -27,29 +27,22 @@ function generateData(days, startValue, volatility, trend) {
 
 const DAYS = 365;
 
-// API Helper for real data
+// ── CONFIGURATION ──────────────────────────────────────────────────────────────
+// After deploying the Cloudflare Worker, paste your worker URL here.
+// It will look like:  https://yahoo-finance-proxy.<your-subdomain>.workers.dev
+const WORKER_BASE_URL = 'https://yahoo-finance-proxy.ian-servin2010.workers.dev';
+
+// API Helper for real data (calls our own Cloudflare Worker proxy)
 async function fetchYahooData(ticker) {
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?range=1y&interval=1d`;
-    // We strictly use api.allorigins.win. Other proxies block GitHub Pages origins or redirect to spam.
-    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+    const proxyUrl = `${WORKER_BASE_URL}/?ticker=${encodeURIComponent(ticker)}&range=1y&interval=1d`;
     try {
         const res = await fetch(proxyUrl);
-        if (!res.ok) throw new Error(`Proxy responded with ${res.status}`);
-        
-        // allorigins wraps the real response inside a `.contents` string
-        const jsonWrapper = await res.json();
-        if (!jsonWrapper.contents) return null;
-        
-        let data;
-        try {
-            data = JSON.parse(jsonWrapper.contents);
-        } catch (parseError) {
-            // Silently fail if Yahoo Finance returned an HTML rate-limit shield instead of a JSON payload
-            return null;
-        }
-        
+        if (!res.ok) throw new Error(`Worker responded with ${res.status}`);
+
+        const data = await res.json();
+
         if (!data || !data.chart || !data.chart.result) return null;
-        
+
         const result = data.chart.result[0];
         const closes = result.indicators.quote[0].close;
         const filtered = closes.filter(val => val !== null);
@@ -70,7 +63,7 @@ const metrics = {
         dataSource: 'Source: Yahoo Finance | Data refreshes every 15 minutes',
         formatter: formatCurrency,
         generate: async () => {
-             return await fetchYahooData('CL=F');
+            return await fetchYahooData('CL=F');
         },
         type: 'standard'
     },
@@ -81,7 +74,7 @@ const metrics = {
         dataSource: 'Source: Yahoo Finance | Data refreshes every 15 minutes',
         formatter: formatCurrency,
         generate: async () => {
-             return await fetchYahooData('SOXX');
+            return await fetchYahooData('SOXX');
         },
         type: 'standard'
     },
@@ -92,24 +85,24 @@ const metrics = {
         dataSource: 'Source: Yahoo Finance | Data refreshes every 15 minutes',
         formatter: formatNumber,
         generate: async () => {
-             const spyData = await fetchYahooData('SPY');
-             const rspData = await fetchYahooData('RSP');
-             
-             if (spyData && rspData) {
-                 const minLength = Math.min(spyData.length, rspData.length);
-                 const spyTrimmed = spyData.slice(-minLength);
-                 const rspTrimmed = rspData.slice(-minLength);
-                 
-                 const spyStart = spyTrimmed[0];
-                 const rspStart = rspTrimmed[0];
-                 
-                 const top10Live = spyTrimmed.map(val => (val / spyStart) * 100);
-                 const ewLive = rspTrimmed.map(val => (val / rspStart) * 100);
-                 
-                 return { equalWeight: ewLive, top10: top10Live };
-             }
-             
-             return null;
+            const spyData = await fetchYahooData('SPY');
+            const rspData = await fetchYahooData('RSP');
+
+            if (spyData && rspData) {
+                const minLength = Math.min(spyData.length, rspData.length);
+                const spyTrimmed = spyData.slice(-minLength);
+                const rspTrimmed = rspData.slice(-minLength);
+
+                const spyStart = spyTrimmed[0];
+                const rspStart = rspTrimmed[0];
+
+                const top10Live = spyTrimmed.map(val => (val / spyStart) * 100);
+                const ewLive = rspTrimmed.map(val => (val / rspStart) * 100);
+
+                return { equalWeight: ewLive, top10: top10Live };
+            }
+
+            return null;
         },
         type: 'divergence'
     },
@@ -120,7 +113,7 @@ const metrics = {
         dataSource: 'Source: Yahoo Finance | Data refreshes every 15 minutes',
         formatter: (val) => formatNumber(val) + '%',
         generate: async () => {
-             return await fetchYahooData('^TNX');
+            return await fetchYahooData('^TNX');
         },
         type: 'standard'
     },
@@ -131,7 +124,7 @@ const metrics = {
         dataSource: 'Source: Yahoo Finance | Data refreshes every 15 minutes',
         formatter: formatCurrency,
         generate: async () => {
-             return await fetchYahooData('OWL');
+            return await fetchYahooData('OWL');
         },
         type: 'standard'
     }
@@ -157,12 +150,12 @@ function calculateRollingBands(data, period = 60, multiplier = 2) {
         const mean = slice.reduce((a, b) => a + b, 0) / slice.length;
         const variance = slice.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / slice.length;
         const stdDev = Math.sqrt(variance);
-        
+
         // If variance is 0 (first data point), give it a tiny buffer
         const sd = stdDev === 0 ? mean * 0.02 : stdDev;
-        
-        bands.push({ 
-            upper: mean + multiplier * sd, 
+
+        bands.push({
+            upper: mean + multiplier * sd,
             lower: mean - multiplier * sd,
             mean: mean
         });
@@ -177,30 +170,30 @@ function calculateRollingBands(data, period = 60, multiplier = 2) {
 function renderSparkline(data, bands) {
     const width = 300;
     const height = 80;
-    
+
     let min = Math.min(...data);
     let max = Math.max(...data);
-    
+
     // Include bands to ensure they aren't clipped
     min = Math.min(min, ...bands.map(b => b.lower));
     max = Math.max(max, ...bands.map(b => b.upper));
-    
+
     // Auto-scale padding
     const range = (max - min) || 1;
     min -= range * 0.1;
     max += range * 0.1;
     const adjustedRange = max - min;
-    
+
     const scaleX = (i) => (i / (data.length - 1)) * width;
     const scaleY = (v) => height - ((v - min) / adjustedRange) * height;
-    
+
     const pathData = data.map((d, i) => `${i === 0 ? 'M' : 'L'} ${scaleX(i)} ${scaleY(d)}`).join(' ');
-    
+
     // Dynamic Band Polygon
     const upperPath = bands.map((b, i) => `${i === 0 ? 'M' : 'L'} ${scaleX(i)} ${scaleY(b.upper)}`).join(' ');
     const lowerPath = bands.slice().reverse().map((b, i) => `L ${scaleX(bands.length - 1 - i)} ${scaleY(b.lower)}`).join(' ');
     const bandPathData = `${upperPath} ${lowerPath} Z`;
-    
+
     return `
         <svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">
             <path class="svg-band" d="${bandPathData}"></path>
@@ -212,25 +205,25 @@ function renderSparkline(data, bands) {
 function renderDivergenceChart(dataObj) {
     const width = 800;
     const height = 180;
-    
+
     const { top10, equalWeight } = dataObj;
-    
+
     const min = Math.min(...top10, ...equalWeight);
     const max = Math.max(...top10, ...equalWeight);
     const range = (max - min) || 1;
     const dataLen = top10.length;
-    
+
     const scaleX = (i) => (i / (dataLen - 1)) * width;
     const scaleY = (v) => height - ((v - min) / range) * height;
-    
+
     const top10Path = top10.map((d, i) => `${i === 0 ? 'M' : 'L'} ${scaleX(i)} ${scaleY(d)}`).join(' ');
     const ewPath = equalWeight.map((d, i) => `${i === 0 ? 'M' : 'L'} ${scaleX(i)} ${scaleY(d)}`).join(' ');
-    
+
     // Shaded divergence area
     const topAreaData = top10.map((d, i) => `${i === 0 ? 'M' : 'L'} ${scaleX(i)} ${scaleY(d)}`).join(' ');
     const bottomAreaData = equalWeight.slice().reverse().map((d, i) => `L ${scaleX(dataLen - 1 - i)} ${scaleY(d)}`).join(' ');
     const shadedAreaPath = `${topAreaData} ${bottomAreaData} Z`;
-    
+
     return `
         <div class="legend">
              <div class="legend-item"><div class="legend-color" style="background: #94a3b8; border: 1px dashed #94a3b8;"></div> S&P 500 Equal Weight</div>
@@ -258,14 +251,14 @@ function buildMetricCard(metricData, config, container) {
         const currentT10 = top10[top10.length - 1];
         const currentEW = equalWeight[equalWeight.length - 1];
         const divergence = ((currentT10 - currentEW) / currentEW) * 100;
-        
+
         const isValueAlert = Math.abs(divergence) > 15;
         if (isValueAlert && container) container.classList.add('alert');
-        
-        const story = isValueAlert 
-            ? `Significant divergence present. Top 10 weights are pulling away from broader market average by ${divergence.toFixed(1)}%.` 
+
+        const story = isValueAlert
+            ? `Significant divergence present. Top 10 weights are pulling away from broader market average by ${divergence.toFixed(1)}%.`
             : `Monitoring the performance spread between the top 10 megacap stocks and the broader equal-weight index.`;
-            
+
         return `
             <div class="card-header">
                 <div>
@@ -288,47 +281,47 @@ function buildMetricCard(metricData, config, container) {
             <div class="data-source">${footerText}</div>
         `;
     }
-    
+
     // Standard standard-metric evaluation
     const data = metricData;
     const current = data[data.length - 1];
     const roc30 = calculateROC(data, 30);
     const roc90 = calculateROC(data, 90);
-    
+
     const bands = calculateRollingBands(data, 60, 2);
     const lastBand = bands[bands.length - 1];
-    
+
     let isValueAlert = false;
     let isVelocityAlert = false;
-    
+
     // Check if current point broke the moving channel
     if (current > lastBand.upper || current < lastBand.lower) {
         isValueAlert = true;
     }
-    
+
     // Check for velocity spike
     if (Math.abs(roc30) > 15) {
         isVelocityAlert = true;
     }
-    
+
     // VALUE alert changes the whole card border to red
     if (isValueAlert && container) {
         container.classList.add('alert');
     }
-    
+
     let story = "Trading within historical 12-month range.";
     if (isValueAlert) {
-         if (current > lastBand.upper) {
-              story = "Trending significantly above 12-month historical averages. Strong upward momentum.";
-         } else if (current < lastBand.lower) {
-              story = "Trending significantly below 12-month historical averages. Strong downward momentum.";
-         }
+        if (current > lastBand.upper) {
+            story = "Trending significantly above 12-month historical averages. Strong upward momentum.";
+        } else if (current < lastBand.lower) {
+            story = "Trending significantly below 12-month historical averages. Strong downward momentum.";
+        }
     } else if (isVelocityAlert) {
         // Only trigger this branch if it's NOT a value alert
         const direction = roc30 > 0 ? "upward" : "downward";
         story = `Price remains within historical bounds; flagging unusual 30-day ${direction} momentum.`;
     }
-    
+
     return `
         <div class="card-header">
             <div>
@@ -385,10 +378,10 @@ async function updateDashboardData() {
     for (const config of Object.values(metrics)) {
         const container = document.getElementById(config.id);
         if (!container) continue;
-        
+
         try {
             const data = await config.generate();
-            
+
             if (!data) {
                 // If it failed and we never got past the loading state, show the offline warning
                 if (container.innerHTML.includes('Connecting to market data feed...')) {
@@ -408,10 +401,10 @@ async function updateDashboardData() {
                 setTimeout(() => retryFailedMetric(config), 60000 + (Math.random() * 5000));
                 continue;
             }
-            
+
             // Reset state
             container.classList.remove('alert');
-            
+
             // Re-render entirely with updated dataset
             container.innerHTML = buildMetricCard(data, config, container);
         } catch (e) {
@@ -419,7 +412,7 @@ async function updateDashboardData() {
             setTimeout(() => retryFailedMetric(config), 60000 + (Math.random() * 5000));
         }
 
-        // Add a polite 500ms delay between fetches so the free proxy doesn't block us via CORS/Timeouts
+        // Add a polite 500ms delay between fetches to be respectful to Yahoo Finance's API
         await new Promise(r => setTimeout(r, 500));
     }
 }
@@ -431,7 +424,7 @@ async function updateDashboardData() {
 async function retryFailedMetric(config) {
     const container = document.getElementById(config.id);
     if (!container) return;
-    
+
     try {
         const data = await config.generate();
         if (data) {
