@@ -363,6 +363,10 @@ body.dashboard-mode .header-rules {
   display: none;
 }
 
+body.dashboard-mode .view-toggle {
+  top: 1rem;
+}
+
 /* Hide editorial content */
 body.dashboard-mode .report-intro {
   display: none;
