@@ -5,87 +5,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Cool Zone Dashboard</title>
-    <!-- Google Fonts: Inter & Merriweather -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <button id="view-toggle" class="view-toggle" onclick="toggleDashboardMode()">Dashboard View</button>
-
-    <header class="header">
-        <h1>Airplane Ian's Cool Zone <br>Situation Report</h1>
-        <div class="header-rules"></div>
+    <header class="toolbar">
+        <span class="brand-key">CZ</span>
+        <span class="toolbar-label">RANGE</span>
+        <div id="window-bar" class="window-bar"></div>
+        <span id="window-dates" class="window-dates"></span>
+        <button id="cfg-open" class="cfg-open">ALERT CFG</button>
+        <span id="clock" class="clock"></span>
     </header>
 
+    <div class="alert-strip">
+        <span class="alert-strip-label">ALERTS</span>
+        <div id="alert-list" class="alert-list"></div>
+    </div>
+
     <main class="dashboard">
-        <!-- Executive Summary / Forward -->
-        <section class="report-intro">
-            <p>This report is my attempt at monitoring systemic risk across three (tightly coupled) domains: physical
-                constraints, tech giant market concentration, and private credit. Based on some of the signals and
-                concepts from Richard Bookstaber's recent op-ed, my goal is to
-                visualize vulnerabilities in the physical world propagating across the broader economy through
-                interconnected financial structures.
-            </p>
-            <p>The charts below use live data from Yahoo Finance to provide a real-time look at how these different
-                areas are holding up.
-            </p>
-        </section>
-
-        <!-- Layer 1: Physical Foundation -->
-        <section class="layer">
-            <header class="layer-header">
-                <h2>Layer 1: Physical Foundation</h2>
-                <p>Tracks the real-world constraints on the economy. Energy prices serve as a proxy for the cost of
-                    physical movement, while semiconductor stocks act as a bellwether for global reliance on hardware
-                    supply chains.</p>
-            </header>
-            <div class="metrics-grid">
-                <div class="metric-card" id="metric-oil">
-                    <!-- JS will populate this with standard metric + sparkline -->
-                </div>
-                <div class="metric-card" id="metric-soxx">
-                    <!-- JS will populate this with standard metric + sparkline -->
-                </div>
-            </div>
-        </section>
-
-        <!-- Layer 2: Tech Goliaths -->
-        <section class="layer">
-            <header class="layer-header">
-                <h2>Layer 2: Tech Goliaths</h2>
-                <p>Examines how much of the broader stock market's capital is tied up in a handful of megacap technology
-                    firms. A widening spread indicates building pressure as investments crowd into the AI infrastructure
-                    trade.</p>
-            </header>
-            <div class="metrics-grid">
-                <div class="metric-card divergence-card" id="metric-sp500-divergence">
-                    <!-- JS will populate this with divergence chart -->
-                </div>
-            </div>
-        </section>
-
-        <!-- Layer 3: Credit Vulnerability -->
-        <section class="layer">
-            <header class="layer-header">
-                <h2>Layer 3: Credit Vulnerability</h2>
-                <p>Monitors the cost of capital versus the structural health of non-bank lenders. When treasury yields
-                    pull higher but private credit sentiment plummets, it signals that debt markets may in trouble.</p>
-            </header>
-            <div class="metrics-grid">
-                <div class="metric-card" id="metric-treasury">
-                    <!-- JS will populate this with standard metric + sparkline -->
-                </div>
-                <div class="metric-card" id="metric-owl">
-                    <!-- JS will populate this with standard metric + sparkline -->
-                </div>
-            </div>
-        </section>
+        <section class="panel" id="metric-oil"></section>
+        <section class="panel" id="metric-soxx"></section>
+        <section class="panel" id="metric-treasury"></section>
+        <section class="panel" id="metric-sp500-divergence"></section>
+        <section class="panel" id="metric-owl"></section>
     </main>
+
+    <footer class="statusbar">
+        <span>SRC YAHOO FINANCE</span>
+        <span>REFRESH 15M</span>
+        <span id="last-update">LAST UPD --:--:--</span>
+        <span id="stream-status" class="stream-status"></span>
+        <span class="credit">an <a href="https://bsky.app/profile/airplaneian.com" target="_blank" rel="noopener">@airplaneian</a> joint</span>
+    </footer>
+
+    <div id="cfg" class="cfg" hidden>
+        <div class="cfg-backdrop"></div>
+        <aside class="cfg-drawer">
+            <header class="cfg-head">
+                <span>ALERT CONFIGURATION</span>
+                <button id="cfg-close" class="cfg-close" aria-label="Close">✕</button>
+            </header>
+            <div id="cfg-body" class="cfg-body"></div>
+            <footer class="cfg-foot">
+                <span>SAVED IN THIS BROWSER</span>
+                <button id="cfg-reset" class="cfg-reset">RESET DEFAULTS</button>
+            </footer>
+        </aside>
+    </div>
 
     <script src="app.js"></script>
 </body>
